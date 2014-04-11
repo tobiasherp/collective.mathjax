@@ -3,4 +3,5 @@
 .*
 BAK*
 dist
+*~
 !.gitignore
