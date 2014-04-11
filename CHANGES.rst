@@ -12,6 +12,9 @@ URL
 http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML.
 The caveat is that the query string part of this URL prevents caching ...
 
+The complete source tree of MathJax has been included before (although unused).
+This is used now, and was updated to MathJax v2.3.
+
 1.1.1 (2013-02-05)
 ------------------
 
