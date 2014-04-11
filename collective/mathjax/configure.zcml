@@ -5,8 +5,8 @@
     i18n_domain="collective.mathjax">
 
   <browser:resourceDirectory
-      name="collective.mathjax.resources"
-      directory="resources" />
+      name="mathjax"
+      directory="resources/MathJax" />
 
   <genericsetup:registerProfile
       name="default"

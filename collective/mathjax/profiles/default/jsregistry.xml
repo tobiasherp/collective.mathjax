@@ -13,7 +13,7 @@
       cookable="False"
       enabled="True"
       expression=""
-      id="++resource++collective.mathjax/MathJax/MathJax.js"
+      id="++resource++mathjax/MathJax.js"
       inline="False"
       />
 
