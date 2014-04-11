@@ -1,3 +1,6 @@
+/* -*- Mode: Javascript; indent-tabs-mode:nil; js-indent-level: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+
 /*************************************************************
  *
  *  MathJax/jax/output/SVG/autoload/multiline.js
@@ -6,7 +9,7 @@
  *
  *  ---------------------------------------------------------------------
  *  
- *  Copyright (c) 2011-2012 Design Science, Inc.
+ *  Copyright (c) 2011-2013 The MathJax Consortium
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +25,7 @@
  */
 
 MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
-  var VERSION = "2.1";
+  var VERSION = "2.3";
   var MML = MathJax.ElementJax.mml,
       SVG = MathJax.OutputJax.SVG,
       BBOX = SVG.BBOX;
@@ -160,13 +163,18 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
         if (this.data[i]) {
           if (this.data[i].SVGbetterBreak(info,state)) {
             better = true; index = [i].concat(info.index); W = info.W; w = info.w;
-            if (info.penalty === PENALTY.newline) {info.index = index; info.nest--; return true}
+            if (info.penalty === PENALTY.newline) {
+              info.index = index;
+              if (info.nest) {info.nest--}
+              return true;
+            }
           }
           scanW = (broken ? info.scanW : this.SVGaddWidth(i,info,scanW));
         }
         info.index = []; i++; broken = false;
       }
-      info.nest--; info.index = index;
+      if (info.nest) {info.nest--}
+      info.index = index;
       if (better) {info.W = W}
       return better;
     },
@@ -362,13 +370,18 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
         if (this.data[k]) {
           if (this.data[k].SVGbetterBreak(info,state)) {
             better = true; index = [i].concat(info.index); W = info.W; w = info.w;
-            if (info.penalty === PENALTY.newline) {info.index = index; info.nest--; return true}
+            if (info.penalty === PENALTY.newline) {
+              info.index = index;
+              if (info.nest) {info.nest--}
+              return true;
+            }
           }
           scanW = (broken ? info.scanW : this.SVGaddWidth(i,info,scanW));
         }
         info.index = []; i++; broken = false;
       }
-      info.nest--; info.index = index;
+      if (info.nest) {info.nest--}
+      info.index = index;
       if (better) {info.W = W; info.w = w}
       return better;
     },
@@ -487,7 +500,7 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
       //  mrows for nesting, but can leave these unbalanced.
       //
       if (values.texClass === MML.TEXCLASS.OPEN) {info.nest++}
-      if (values.texClass === MML.TEXCLASS.CLOSE) {info.nest--}
+      if (values.texClass === MML.TEXCLASS.CLOSE && info.nest) {info.nest--}
       //
       //  Get the default penalty for this location
       //
@@ -541,6 +554,12 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
     SVGbetterBreak: function (info,state) {
       if (info.values && info.values.last === this) {return false}
       var values = this.getValues("linebreak");
+      var linebreakValue = values.linebreak;
+      if (!linebreakValue || this.hasDimAttr()) {
+        // The MathML spec says that the linebreak attribute should be ignored
+        // if any dimensional attribute is set.
+        linebreakValue = MML.LINEBREAK.AUTO;
+      }
       //
       //  Get the default penalty for this location
       //
@@ -555,8 +574,8 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
       //  Get the penalty for this type of break and
       //    use it to modify the default penalty
       //
-      var linebreak = PENALTY[values.linebreak||MML.LINEBREAK.AUTO];
-      if (values.linebreak === MML.LINEBREAK.AUTO && w >= PENALTY.spacelimit*1000)
+      var linebreak = PENALTY[linebreakValue];
+      if (linebreakValue === MML.LINEBREAK.AUTO && w >= PENALTY.spacelimit*1000)
         {linebreak = [(w+PENALTY.spaceoffset)*PENALTY.spacefactor]}
       if (!(linebreak instanceof Array)) {
         //  for breaks past the width, don't modify penalty

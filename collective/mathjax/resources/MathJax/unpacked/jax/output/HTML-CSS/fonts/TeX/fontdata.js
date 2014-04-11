@@ -1,3 +1,6 @@
+/* -*- Mode: Javascript; indent-tabs-mode:nil; js-indent-level: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+
 /*************************************************************
  *
  *  MathJax/jax/output/HTML-CSS/fonts/TeX/fontdata.js
@@ -7,7 +10,7 @@
  *
  *  ---------------------------------------------------------------------
  *  
- *  Copyright (c) 2009-2012 Design Science, Inc.
+ *  Copyright (c) 2009-2013 The MathJax Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +26,7 @@
  */
 
 (function (HTMLCSS,MML,AJAX) {
-  var VERSION = "2.1";
+  var VERSION = "2.3";
   
   var MAIN   = "MathJax_Main",
       BOLD   = "MathJax_Main-bold",
@@ -63,7 +66,8 @@
         "MathJax_SansSerif-bold":   "SansSerif/Bold/Main.js",
         "MathJax_SansSerif-italic": "SansSerif/Italic/Main.js",
         "MathJax_Script":           "Script/Regular/Main.js",
-        "MathJax_Typewriter":       "Typewriter/Regular/Main.js"
+        "MathJax_Typewriter":       "Typewriter/Regular/Main.js",
+        "MathJax_Caligraphic-bold": "Caligraphic/Bold/Main.js"
       },
       
       VARIANT: {
@@ -129,7 +133,10 @@
                      0x210F:[0x210F,MML.VARIANT.NORMAL]  // \hslash
                    }},
         "-largeOp": {fonts:[SIZE2,SIZE1,MAIN]},
-        "-smallOp": {fonts:[SIZE1,MAIN]}
+        "-smallOp": {fonts:[SIZE1,MAIN]},
+        "-tex-caligraphic-bold": {fonts:["MathJax_Caligraphic-bold","MathJax_Main-bold","MathJax_Main","MathJax_Math","MathJax_Size1"], bold:true,
+                                  offsetA: 0x41, variantA: "bold-italic"},
+        "-tex-oldstyle-bold": {fonts:["MathJax_Caligraphic-bold","MathJax_Main-bold","MathJax_Main","MathJax_Math","MathJax_Size1"], bold:true}
       },
       
       RANGES: [
@@ -176,7 +183,7 @@
         0x210D: [0x0048,MML.VARIANT.DOUBLESTRUCK],
         0x210E: [0x0068,MML.VARIANT.ITALIC],
         0x2110: [0x004A,MML.VARIANT.SCRIPT],
-        0x2111: [0x004A,MML.VARIANT.FRAKTUR],
+        0x2111: [0x0049,MML.VARIANT.FRAKTUR],
         0x2112: [0x004C,MML.VARIANT.SCRIPT],
         0x2115: [0x004E,MML.VARIANT.DOUBLESTRUCK],
         0x2119: [0x0050,MML.VARIANT.DOUBLESTRUCK],
@@ -1562,6 +1569,10 @@
     HTMLCSS.FONTDATA.FONTS['MathJax_Main-bold'][0x2245][2] -= 106; // fix error in character's right bearing
     HTMLCSS.FONTDATA.FONTS['MathJax_Main-bold'][0x2245][5] = {rfix:-106}; // fix error in character's right bearing
   });
+  MathJax.Hub.Register.LoadHook(HTMLCSS.fontDir+"/Typewriter/Regular/BasicLatin.js",function () {
+    HTMLCSS.FONTDATA.FONTS['MathJax_Typewriter'][0x20][2] += 275;       // fix error in character width
+    HTMLCSS.FONTDATA.FONTS['MathJax_Typewriter'][0x20][5] = {rfix:275}; // fix error in character width
+  });
   
   //
   //  Add some spacing characters (more will come later)
@@ -1583,7 +1594,7 @@
           HTMLCSS.FONTDATA.REMAP[0x2CB] = 0x60; // grave
           HTMLCSS.FONTDATA.REMAP[0x2DA] = 0xB0; // ring above
           
-          var testString = HTMLCSS.msieCheckGreek =
+          var testString =
             String.fromCharCode(0x393)+" "+String.fromCharCode(0x3A5)+" "+String.fromCharCode(0x39B);
 
           HTMLCSS.FONTDATA.RANGES.push({name: "IEgreek", low: 0x03B1, high: 0x03C9, offset: "IEG", add: 32});
@@ -1755,6 +1766,20 @@
             };
             
           }
+
+          if (HTMLCSS.Font.testFont({family:"MathJax_Greek", weight:"bold", style:"italic", testString: testString})) {
+            HTMLCSS.Augment({
+              FONTDATA: {
+                VARIANT: {
+                  "bold-italic": {offsetG: 0x391,
+                                  variantG: "-Greek-Bold-Italic"},
+                  "-Greek-Bold-Italic": {fonts:["MathJax_Greek-bold-italic"]}
+                },
+                FONTS: {"MathJax_Greek-bold-italic": "Greek/BoldItalic/Main.js"}
+              }
+            });
+          }
+
         }
 
         if (HTMLCSS.msieIE6) {
@@ -1872,7 +1897,6 @@
           delete HTMLCSS.FONTDATA.REMAPACCENT["\u2192"];
         }
         if (browser.isPC && !MathJax.Hub.Browser.versionAtLeast("5.0")) {
-          // FIXME:  patch caligraphic bold, too
           var WinChrome = "-WinChrome";
           HTMLCSS.Augment({
             FONTDATA: {
@@ -1881,6 +1905,7 @@
                 bold:   {remap: {0xE2F1: [0x3E,WinChrome]}},
                 italic: {remap: {0x64:   [0x64,WinChrome]}},
                 "-tex-caligraphic": {remap: {0x54: [0x54,WinChrome]}},
+                "-tex-caligraphic-bold": {remap: {0x54: [0xE2F0,WinChrome]}},
                 "-largeOp": {remap: {0x2A00: [0x2A00,WinChrome]}},
                 "-smallOp": {remap: {0x22C3: [0x22C3,WinChrome]}},
                 "-WinChrome": {fonts:["MathJax_WinChrome"]}
@@ -1911,8 +1936,9 @@
             0xE2F0: [720,69,644,38,947],       // stix-lowercase u italic slashed
             0xE2F1: [587,85,894,96,797]        // stix-lowercase u bold italic slashed
           };
-          
+
         }
+
       }
 
     });

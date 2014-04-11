@@ -1,3 +1,6 @@
+/* -*- Mode: Javascript; indent-tabs-mode:nil; js-indent-level: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+
 /*************************************************************
  *
  *  MathJax/jax/output/SVG/autoload/menclose.js
@@ -6,7 +9,7 @@
  *
  *  ---------------------------------------------------------------------
  *  
- *  Copyright (c) 2011-2012 Design Science, Inc.
+ *  Copyright (c) 2011-2013 The MathJax Consortium
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +25,7 @@
  */
 
 MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
-  var VERSION = "2.1";
+  var VERSION = "2.3";
   var MML = MathJax.ElementJax.mml,
       SVG = MathJax.OutputJax.SVG,
       BBOX = SVG.BBOX;
@@ -105,15 +108,20 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
       if (values.thickness == null) {values.thickness = ".075em"}
       if (values.padding == null)   {values.padding   = ".2em"}
       var mu = this.SVGgetMu(svg), scale = this.SVGgetScale();
-      var p = SVG.length2em(values.padding,mu,1/SVG.em) * scale;
-      var t = SVG.length2em(values.thickness,mu,1/SVG.em) * scale;
+      var p = SVG.length2em(values.padding,mu,1/SVG.em) * scale;  // padding for enclosure
+      var t = SVG.length2em(values.thickness,mu,1/SVG.em);        // thickness of lines (not scaled, see issue #414)
       var H = base.h+p+t, D = base.d+p+t, W = base.w+2*(p+t);
-      var notation = values.notation.split(/ /);
       var dx = 0, w, h, i, m, borders = [false,false,false,false];
       if (!values.mathcolor) {values.mathcolor = "black"}
+
+      // perform some reduction e.g. eliminate duplicate notations.
+      var nl = MathJax.Hub.SplitList(values.notation), notation = {};
+      for (i = 0, m = nl.length; i < m; i++) notation[nl[i]] = true;
+      if (notation[MML.NOTATION.UPDIAGONALARROW]) notation[MML.NOTATION.UPDIAGONALSTRIKE] = false;
       
-      for (i = 0, m = notation.length; i < m; i++) {
-        switch (notation[i]) {
+      for (var n in notation) {
+        if (!notation.hasOwnProperty(n) || !notation[n]) continue;
+        switch (n) {
           case MML.NOTATION.BOX:
             borders = [true,true,true,true];
             break;
@@ -154,16 +162,16 @@ MathJax.Hub.Register.StartupHook("SVG Jax Ready",function () {
             break;
 
           case MML.NOTATION.UPDIAGONALSTRIKE:
-              if (this.arrow) {
-                var l = Math.sqrt(W*W + (H+D)*(H+D)), f = 1/l * 10/SVG.em * t/.075;
-                w = W * f; h = (H+D) * f; var x = .4*h;
-                svg.Add(BBOX.DLINE(H-.5*h,D,W-.5*w,t,values.mathcolor,"up"));
-                svg.Add(BBOX.FPOLY(
-                  [[x+w,h], [x-.4*h,.4*w], [x+.3*w,.3*h], [x+.4*h,-.4*w], [x+w,h]],
-                  values.mathcolor),W-w-x,H-h);
-              } else {
-                svg.Add(BBOX.DLINE(H,D,W,t,values.mathcolor,"up"));
-              }
+            svg.Add(BBOX.DLINE(H,D,W,t,values.mathcolor,"up"));
+            break;
+
+          case MML.NOTATION.UPDIAGONALARROW:
+              var l = Math.sqrt(W*W + (H+D)*(H+D)), f = 1/l * 10/SVG.em * t/.075;
+              w = W * f; h = (H+D) * f; var x = .4*h;
+              svg.Add(BBOX.DLINE(H-.5*h,D,W-.5*w,t,values.mathcolor,"up"));
+              svg.Add(BBOX.FPOLY(
+                [[x+w,h], [x-.4*h,.4*w], [x+.3*w,.3*h], [x+.4*h,-.4*w], [x+w,h]],
+                values.mathcolor),W-w-x,H-h);
             break;
 
           case MML.NOTATION.DOWNDIAGONALSTRIKE:

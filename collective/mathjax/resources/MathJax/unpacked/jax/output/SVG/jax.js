@@ -1,3 +1,6 @@
+/* -*- Mode: Javascript; indent-tabs-mode:nil; js-indent-level: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+
 /*************************************************************
  *
  *  MathJax/jax/output/SVG/jax.js
@@ -8,7 +11,7 @@
  *  
  *  ---------------------------------------------------------------------
  *  
- *  Copyright (c) 2011-2012 Design Science, Inc.
+ *  Copyright (c) 2011-2013 The MathJax Consortium
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,7 +61,15 @@
           width: "100%"
         },
         
-        ".MathJax_SVG svg a > g, .MathJax_SVG_Display svg a > g": {
+        ".MathJax_SVG *": {
+          transition: "none",
+          "-webkit-transition": "none",
+          "-moz-transition": "none",
+          "-ms-transition": "none",
+          "-o-transition": "none"
+        },
+        
+        ".mjx-svg-href": {
           fill: "blue", stroke: "blue"
         },
 
@@ -87,7 +98,17 @@
       var settings = HUB.config.menuSettings;
       if (settings.scale) {this.config.scale = settings.scale}
       this.SUPER(arguments).Config.apply(this,arguments);
-      this.fontInUse = this.config.font; this.fontDir += "/" + this.config.font;
+      this.fontInUse = this.config.font;
+      if (settings.font && settings.font !== "Auto") {
+        if (settings.font === "TeXWeb") {this.fontInUse = "TeX"}
+        else if (settings.font === "STIXWeb") {this.fontInUse = "STIX-Web"}
+        else if (settings.font === "AsanaMathWeb") {this.fontInUse = "Asana-Math"}
+        else if (settings.font === "GyrePagellaWeb") {this.fontInUse = "Gyre-Pagella"}
+        else if (settings.font === "GyreTermesWeb") {this.fontInUse = "Gyre-Termes"}
+        else if (settings.font === "LatinModernWeb") {this.fontInUse = "Latin-Modern"}
+        else if (settings.font === "NeoEulerWeb") {this.fontInUse = "Neo-Euler"}
+      }
+      this.fontDir += "/" + this.fontInUse;
       if (!this.require) {this.require = []}
       this.require.push(this.fontDir+"/fontdata.js");
       this.require.push(MathJax.OutputJax.extensionDir+"/MathEvents.js");
@@ -308,14 +329,14 @@
         //
         state.SVGeqn += (state.i - state.SVGi); state.SVGi = state.i;
         if (state.SVGeqn >= state.SVGlast + state.SVGchunk) {
-          this.postTranslate(state);
+          this.postTranslate(state,true);
           state.SVGchunk = Math.floor(state.SVGchunk*this.config.EqnChunkFactor);
           state.SVGdelay = true;  // delay if there are more scripts
         }
       }
     },
 
-    postTranslate: function (state) {
+    postTranslate: function (state,partial) {
       var scripts = state.jax[this.id];
       if (!this.hideProcessedMath) return;
       //
@@ -385,7 +406,11 @@
       this.cwidth = .85*SVG.defaultWidth;
       emex.parentNode.removeChild(emex);
 
+      span.appendChild(this.textSVG);
+      this.mathDIV = span;
       this.idPostfix = "-zoom"; jax.root.toSVG(span,span); this.idPostfix = "";
+      span.removeChild(this.textSVG);
+      
       if (this.operaZoomRefresh)
         {setTimeout(function () {span.firstChild.style.border="1px solid transparent"},1)}
       //
@@ -415,7 +440,7 @@
       return m.toFixed(3).replace(/\.?0+$/,"") + "em";
     },
     Ex: function (m) {
-      m = m / this.TeX.x_height;
+      m = Math.round(m / this.TeX.x_height * this.ex) / this.ex;  // try to use closest pixel size
       if (Math.abs(m) < .0006) {return "0ex"}
       return m.toFixed(3).replace(/\.?0+$/,"") + "ex";
     },
@@ -999,8 +1024,13 @@
 	return svg;
       },
       
+      SVGchildSVG: function (i) {
+        return (this.data[i] ? this.data[i].toSVG() : BBOX());
+      },
+      
       SVGdataStretched: function (i,HW,D) {
         this.SVGdata = {HW:HW, D:D};
+        if (!this.data[i]) {return BBOX()}
         if (D  != null) {return this.data[i].SVGstretchV(HW,D)}
         if (HW != null) {return this.data[i].SVGstretchH(HW)}
         return this.data[i].toSVG();
@@ -1016,7 +1046,7 @@
         // FIXME:  if an element has an id, its zoomed copy will have the same ID
         if (this.id) {svg.removeable = false; SVG.Element(svg.element,{"id":this.id})}
         if (this.href) {
-	  var a = SVG.Element("a");
+	  var a = SVG.Element("a",{"class":"mjx-svg-href"});
 	  a.setAttributeNS(XLINKNS,"href",this.href);
           a.onclick = this.SVGlink;
           SVG.addElement(a,"rect",{width:svg.w, height:svg.h+svg.d, y:-svg.d,
@@ -1027,17 +1057,13 @@
             while (g.firstChild) {a.appendChild(g.firstChild)}
             g.appendChild(a);
           } else {
-            // if removeable, move contents of <g> to <a>, otherise move element to <a>
-            if (svg.removeable && svg.element.nodeName === "g") {
-              while (svg.element.firstChild) {a.appendChild(svg.element.firstChild)}
-            } else {a.appendChild(svg.element)}
-            svg.element = a;
+            a.appendChild(svg.element); svg.element = a;
           }
           svg.removeable = false;
         }
         if (SVG.config.addMMLclasses) {
+          this.SVGaddClass(svg.element,"mjx-svg-"+this.type);
           svg.removeable = false;
-          svg.element.setAttribute("className","mjx-svg-"+this.type);
         }
         var style = this.style;
         if (style && svg.element) {
@@ -1046,6 +1072,10 @@
           svg.element.style.border = svg.element.style.padding = "";
           if (svg.removeable) {svg.removeable = svg.element.style.cssText === ""}
         }
+      },
+      SVGaddClass: function (node,name) {
+        var classes = node.getAttribute("class");
+        node.setAttribute("class",(classes ? classes+" " : "")+name);
       },
       //
       //  WebKit currently scrolls to the BOTTOM of an svg element if it contains the
@@ -1208,6 +1238,11 @@
             "sans-serif-bold-italic":MML.VARIANT.BOLDSANSSERIF
           }[variant]||variant;
         }
+        if (!(variant in SVG.FONTDATA.VARIANT)) {
+          // If the mathvariant value is invalid or not supported by this
+          // font, fallback to normal. See issue 363.
+          variant = "normal";
+        }
 	return SVG.FONTDATA.VARIANT[variant];
       },
       
@@ -1330,7 +1365,7 @@
         //  Handle large operator centering
         //
 	if (values.largeop) {
-	  svg.y = (svg.h - svg.d)/2/scale - SVG.TeX.axis_height;
+	  svg.y = SVG.TeX.axis_height - (svg.h - svg.d)/2/scale;
 	  if (svg.r > svg.w) {svg.ic = svg.r - svg.w; svg.w = svg.r}
 	}
         //
@@ -1349,8 +1384,9 @@
       CoreText: function (parent) {
         if (!parent) {return ""}
         if (parent.isEmbellished()) {return parent.CoreMO().data.join("")}
-        while (parent.isa(MML.mrow) && parent.data.length === 1 && parent.data[0])
-          {parent = parent.data[0]}
+        while ((parent.isa(MML.mrow) || parent.isa(MML.TeXAtom) ||
+                parent.isa(MML.mstyle) || parent.isa(MML.mphantom)) &&
+                parent.data.length === 1 && parent.data[0]) {parent = parent.data[0]}
         if (!parent.isToken) {return ""} else {return parent.data.join("")}
       },
       SVGremapChars: {
@@ -1429,7 +1465,7 @@
         if (this.Parent().type === "merror") {
 	  //  *** FIXME:  Make color, style, scale configurable
           svg = this.SVG(); this.SVGhandleSpace(svg);
-          text = BBOX.G(); text.Add(BBOX.TEXT(.9*scale,this.data.join(""),{fill:"#C00"}));
+          text = BBOX.G(); text.Add(BBOX.TEXT(.9*scale,this.data.join(""),{fill:"#C00",direction:this.Get("dir")}));
           svg.Add(BBOX.RECT(text.h+100,text.d+100,text.w+200,{fill:"#FF8",stroke:"#C00","stroke-width":50}),0,0);
           svg.Add(text,150,0); svg.H += 150; svg.D += 50;
           svg.Clean();
@@ -1437,7 +1473,7 @@
           return svg;
 	} else if (SVG.config.mtextFontInherit) {
           svg = this.SVG(); this.SVGhandleSpace(svg);
-          var variant = this.SVGgetVariant(), def = {};
+          var variant = this.SVGgetVariant(), def = {direction:this.Get("dir")};
           if (variant.bold)   {def["font-weight"] = "bold"}
           if (variant.italic) {def["font-style"] = "italic"}
           svg.Add(BBOX.TEXT(scale,this.data.join(""),def)); svg.Clean();
@@ -1579,7 +1615,7 @@
       toSVG: function () {
         this.SVGgetStyles();
         var svg = this.SVG(); this.SVGhandleSpace(svg);
-        var num = this.data[0].toSVG(), den = this.data[1].toSVG();
+        var num = this.SVGchildSVG(0), den = this.SVGchildSVG(1);
 	var values = this.getValues("displaystyle","linethickness","numalign","denomalign","bevelled");
 	var scale = svg.scale = this.SVGgetScale(), isDisplay = values.displaystyle;
 	var a = SVG.TeX.axis_height * scale;
@@ -1629,7 +1665,7 @@
       toSVG: function () {
         this.SVGgetStyles();
         var svg = this.SVG(); this.SVGhandleSpace(svg);
-	var base = this.data[0].toSVG(), rule, surd;
+	var base = this.SVGchildSVG(0), rule, surd;
 	var scale = this.SVGgetScale();
 	var t = SVG.TeX.rule_thickness * scale, p,q, H, x = 0;
 	if (this.Get("displaystyle")) {p = SVG.TeX.x_height * scale} else {p = t}
@@ -1744,7 +1780,7 @@
           if (boxes[i].w > WW) {WW = boxes[i].w}
         }}
         var t = SVG.TeX.rule_thickness;
-	var base = boxes[this.base] || {w:0, h:0, d:0, H:0, D:0, l:0, r:0, scale:scale};
+	var base = boxes[this.base] || {w:0, h:0, d:0, H:0, D:0, l:0, r:0, y:0, scale:scale};
 	var x, y, z1, z2, z3, dw, k, delta = 0;
         if (base.ic) {delta = 1.3*base.ic + .05} // adjust faked IC to be more in line with expeted results
 	for (i = 0, m = this.data.length; i < m; i++) {
@@ -1770,7 +1806,7 @@
 		k = Math.max(z1,z2-Math.max(0,box.d));
 	      }
 	      k = Math.max(k,1500/SVG.em);
-	      x += delta/2; y = base.h + box.d + k;
+	      x += delta/2; y = base.y + base.h + box.d + k;
 	      box.h += z3; if (box.h > box.H) {box.H = box.h}
 	    } else if (i == this.under) {
 	      if (accent) {
@@ -1781,7 +1817,7 @@
 		k = Math.max(z1,z2-box.h);
 	      }
 	      k = Math.max(k,1500/SVG.em);
-	      x -= delta/2; y = -(base.d + box.h + k);
+	      x -= delta/2; y = base.y -(base.d + box.h + k);
 	      box.d += z3; if (box.d > box.D) {box.D = box.d}
 	    }
 	    svg.Add(box,x,y);
@@ -1877,7 +1913,7 @@
           //  Put that in an <svg> with xlink defined.
           //
           var box = BBOX.G({
-            stroke:"black", fill:"black", "stroke-thickness":0,
+            stroke:"black", fill:"black", "stroke-width":0,
             transform: "matrix(1 0 0 -1 0 0)"
           }).With({removeable: false});
           box.Add(this.data[0].toSVG(),0,0,true); box.Clean();
@@ -1891,10 +1927,10 @@
           var l = Math.max(-svg.l,0), r = Math.max(svg.r-svg.w,0);
           var style = svg.element.style;
           style.width = SVG.Ex(l+svg.w+r);
-          style.height = SVG.Ex(svg.H+svg.D);
-          style.verticalAlign = SVG.Ex(-svg.D-2*SVG.em); // remove 2 extra pixels added below
+          style.height = SVG.Ex(svg.H+svg.D+2*SVG.em);
+          style.verticalAlign = SVG.Ex(-svg.D-3*SVG.em); // remove 2 extra pixels added below plus padding
           style.marginLeft = SVG.Ex(-l); style.marginRight = SVG.Ex(-r);
-          svg.element.setAttribute("viewBox",(-l)+" "+(-svg.H)+" "+(l+svg.w+r)+" "+(svg.H+svg.D));
+          svg.element.setAttribute("viewBox",(-l)+" "+(-svg.H-SVG.em)+" "+(l+svg.w+r)+" "+(svg.H+svg.D+2*SVG.em));
           svg.element.style.margin="1px 0px"; // 1px above and below to prevent lines from touching
           //
           //  If there is extra height or depth, hide that
@@ -1906,7 +1942,7 @@
                               width:SVG.Ex(svg.w), height:SVG.Ex(svg.h+svg.d),
                               "vertical-align":SVG.Ex(-svg.d)}}]]);
             frame.firstChild.appendChild(svg.element); svg.element = frame;
-            style.verticalAlign = ""; style.position = "absolute";
+            style.verticalAlign = style.margin = ""; style.position = "absolute";
             style.bottom = SVG.Ex(svg.d-svg.D); style.left = 0;
           }
           //

@@ -1,3 +1,6 @@
+/* -*- Mode: Javascript; indent-tabs-mode:nil; js-indent-level: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+
 /*************************************************************
  *
  *  MathJax/extensions/TeX/cancel.js
@@ -13,7 +16,7 @@
  *  
  *  ---------------------------------------------------------------------
  *  
- *  Copyright (c) 2011-2012 Design Science, Inc.
+ *  Copyright (c) 2011-2013 The MathJax Consortium
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,13 +32,12 @@
  */
 
 MathJax.Extension["TeX/cancel"] = {
-  version: "2.1",
+  version: "2.3",
 
   //
   //  The attributes allowed in \enclose{notation}[attributes]{math}
   //
   ALLOWED: {
-    arrow: 1,
     color: 1, mathcolor: 1,
     background: 1, mathbackground: 1,
     padding: 1,
@@ -94,7 +96,7 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready",function () {
       var value = this.ParseArg(name),
           attr = this.GetBrackets(name,""),
           math = this.ParseArg(name);
-      var def = CANCEL.setAttributes({notation: MML.NOTATION.UPDIAGONALSTRIKE, arrow:true},attr);
+      var def = CANCEL.setAttributes({notation: MML.NOTATION.UPDIAGONALSTRIKE+" "+MML.NOTATION.UPDIAGONALARROW},attr);
       value = MML.mpadded(value).With({depth:"-.1em",height:"+.1em",voffset:".1em"});
       this.Push(MML.msup(MML.menclose(math).With(def),value));
     }
