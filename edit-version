@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+ME="$0"
+MYDIR="$(dirname "$ME")"
+cd "$MYDIR"
+vim CHANGES.rst setup.py \
+        -c '/\<[0-9]\+\([.][0-9]\+\)*\>/'
+# for now, don't change collective.mathjax.egg-info/PKG-INFO manually

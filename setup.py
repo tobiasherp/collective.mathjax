@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.1.1'
+version = '1.2'
 
 setup(name='collective.mathjax',
       version=version,
@@ -14,7 +14,7 @@ setup(name='collective.mathjax',
       keywords='plone resources',
       author='Johannes Raggam',
       author_email='raggam-nl@adm.at',
-      url='http://github.com/collective/collective.mathjax',
+      url='http://github.com/tobiasherp/collective.mathjax',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['collective'],

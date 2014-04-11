@@ -1,8 +1,11 @@
 Changes
 =======
 
-Branch `offline`
+1.2 (2014-04-11)
 ----------------
+
+Branch offline
+~~~~~~~~~~~~~~
 
 The original integration package retrieves the MathJax data via the documented
 URL
