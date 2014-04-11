@@ -1,6 +1,14 @@
 Changes
 =======
 
+Branch `offline`
+----------------
+
+The original integration package retrieves the MathJax data via the documented
+URL
+http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML.
+The caveat is that the query string part of this URL prevents caching ...
+
 1.1.1 (2013-02-05)
 ------------------
 
