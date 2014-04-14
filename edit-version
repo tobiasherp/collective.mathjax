@@ -6,4 +6,3 @@ cd "$MYDIR"
 vim CHANGES.rst setup.py \
         collective.mathjax.egg-info/PKG-INFO \
         -c '/\<[0-9]\+\([.][0-9]\+\)*\>/'
-# for now, don't change collective.mathjax.egg-info/PKG-INFO manually
