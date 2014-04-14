@@ -12,7 +12,14 @@
       name="default"
       title="collective.mathjax: default"
       directory="profiles/default"
-      description="collective.mathjax default profile: Registers the resources."
+      description="collective.mathjax default profile: Includes MathJax 2.3."
+      provides="Products.GenericSetup.interfaces.EXTENSION" />
+
+  <genericsetup:registerProfile
+      name="online"
+      title="collective.mathjax: online"
+      directory="profiles/online"
+      description="collective.mathjax online profile: Load MathJax dynamically from rackcdn.com."
       provides="Products.GenericSetup.interfaces.EXTENSION" />
 
 </configure>

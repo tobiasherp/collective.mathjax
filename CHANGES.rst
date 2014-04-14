@@ -1,6 +1,11 @@
 Changes
 =======
 
+1.2.1 (2014-04-14)
+------------------
+
+Make the "online" behaviour (i.e. load everything from https://c328740.ssl.cf1.rackcdn.com) available by the "online" profile. The "default" profile uses a local copy.
+
 1.2 (2014-04-11)
 ----------------
 
