@@ -11,7 +11,7 @@
       cookable="False"
       enabled="True"
       expression=""
-      id="++resource++collective.mathjax.resources/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+      id="++resource++mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
       inline="False"
       />
 
