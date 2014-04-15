@@ -4,7 +4,8 @@
   <!-- for the online version (using a query string),
        both cacheable and cookable need to be false.
        We try to be cacheable;
-       we don't need to be cookable because we have "cooked" versions already.
+       we can't be cookable because of dynamic loading
+       of functionality from other files.
        -->
   <javascript
       insert-after="*"
@@ -13,7 +14,7 @@
       cookable="False"
       enabled="True"
       expression=""
-      id="++resource++mathjax/MathJax.js"
+      id="++resource++mathjax/MathJax/MathJax.js"
       inline="False"
       />
 

@@ -13,11 +13,11 @@ differ depending on the git branch.  See the README file for details.
     i18n_domain="collective.mathjax">
 
   <browser:resourceDirectory
-      name="mathjax"
+      name="mathjax/MathJax"
       directory="resources/MathJax/unpacked" />
 
   <browser:resourceDirectory
-      name="mathjax/fonts"
+      name="mathjax/MathJax/fonts"
       directory="resources/MathJax/fonts" />
 
   <genericsetup:registerProfile
