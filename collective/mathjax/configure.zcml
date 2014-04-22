@@ -1,3 +1,11 @@
+<!-- NOTE
+
+There is no way of choosing a "profile" when installing a product in Plone
+(to an existing site, at least; it would be possible to choose when creating a
+new site object).  Thus, this file will contain one profile only, but it will
+differ depending on the git branch.  See the README file for details.
+
+  -->
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
