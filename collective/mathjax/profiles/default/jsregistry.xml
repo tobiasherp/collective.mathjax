@@ -3,18 +3,19 @@
 
   <!-- for the online version (using a query string),
        both cacheable and cookable need to be false.
-       We try to be cacheable;
-       we can't be cookable because of dynamic loading
-       of functionality from other files.
+       "cookable" would cause the file to be merged into a composition;
+       "cacheable" would still mangle the file path,
+                   destroying the common directory component which is needed
+                   for dynamic loading of functionality from other files.
        -->
   <javascript
       insert-after="*"
-      cacheable="True"
+      cacheable="False"
       compression="none"
       cookable="False"
       enabled="True"
       expression=""
-      id="++resource++mathjax/MathJax/MathJax.js"
+      id="++resource++mathjax/MathJax.js"
       inline="False"
       />
 
