@@ -1,11 +1,10 @@
+# some operations (which didn't work anyway) were moved to convert.vim
 # fix whitespace
 s,\s\+$,,
 # vim: soft tabstop
 /^\/\* vim:/s,\(tw=80\):,\1 sts=2:,
 # usage comment:
-s,^\( \*\
- \*  \)\(/MathJax/.*\)$,\1copied from: \2\n *  (source above the MathJax.js script element),
 s,^\(MathJax\)\.Hub\.Config(,Window.\1 = ,
-s,});\
-\
-MathJax\.Ajax\.loadComplete(.*$,};,
+# refine comment:
+s,\(copied from: \)\/,\1..\/,
+s,\(copied from: .*\.js\)$,\1;,
