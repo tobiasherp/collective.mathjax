@@ -13,7 +13,7 @@ differ depending on the git branch.  See the README file for details.
     i18n_domain="collective.mathjax">
 
   <browser:resourceDirectory
-      name="mathjax/MathJax"
+      name="mathjax"
       directory="resources/MathJax/unpacked" />
 
   <browser:resourceDirectory

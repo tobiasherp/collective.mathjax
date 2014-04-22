@@ -9,12 +9,12 @@
        -->
   <javascript
       insert-after="*"
-      cacheable="True"
+      cacheable="False"
       compression="none"
       cookable="False"
       enabled="True"
       expression=""
-      id="++resource++mathjax/MathJax/MathJax.js"
+      id="++resource++mathjax/MathJax.js"
       inline="False"
       />
 
