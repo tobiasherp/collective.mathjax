@@ -3,7 +3,7 @@
 
 /*************************************************************
  *
- *  copied from: /MathJax/unpacked/config/Accessible.js
+ *  copied from: ../MathJax/unpacked/config/Accessible.js;
  *  converted to "configuration object style"
  *  (source above the MathJax.js script element)
  *
