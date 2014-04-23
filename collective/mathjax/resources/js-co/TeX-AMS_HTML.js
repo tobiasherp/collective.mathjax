@@ -18,7 +18,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-Window.MathJax = {
+window.MathJax = {
   extensions: ["tex2jax.js","MathEvents.js","MathZoom.js","MathMenu.js","toMathML.js","TeX/noErrors.js","TeX/noUndefined.js","TeX/AMSmath.js","TeX/AMSsymbols.js"],
   jax: ["input/TeX","output/HTML-CSS"]
 };

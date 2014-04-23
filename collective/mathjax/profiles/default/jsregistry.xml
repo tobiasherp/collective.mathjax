@@ -9,7 +9,7 @@
        -->
   <javascript
       insert-after="*"
-      cacheable="True"
+      cacheable="False"
       compression="none"
       cookable="True"
       enabled="True"
