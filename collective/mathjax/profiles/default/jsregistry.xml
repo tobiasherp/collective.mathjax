@@ -1,13 +1,23 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
 
-  <!-- for the online version (using a query string),
-       both cacheable and cookable need to be false.
+  <!-- Both cacheable and cookable need to be false.
        "cookable" would cause the file to be merged into a composition;
        "cacheable" would still mangle the file path,
                    destroying the common directory component which is needed
                    for dynamic loading of functionality from other files.
        -->
+  <javascript
+      insert-after="*"
+      cacheable="True"
+      compression="none"
+      cookable="True"
+      enabled="True"
+      expression=""
+      id="++resource++mathjax-config/TeX-AMS-MML_HTMLorMML.js"
+      inline="False"
+      />
+
   <javascript
       insert-after="*"
       cacheable="False"
