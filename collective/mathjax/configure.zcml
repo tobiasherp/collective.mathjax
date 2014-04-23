@@ -20,6 +20,10 @@ differ depending on the git branch.  See the README file for details.
       name="mathjax/MathJax/fonts"
       directory="resources/MathJax/fonts" />
 
+  <browser:resourceDirectory
+      name="mathjax-config"
+      directory="resources/js-co" />
+
   <genericsetup:registerProfile
       name="default"
       title="collective.mathjax: default (unpacked)"
