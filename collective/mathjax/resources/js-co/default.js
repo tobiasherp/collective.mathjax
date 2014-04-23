@@ -39,7 +39,7 @@
  *  want to change them from their default values.
  */
 
-Window.MathJax = {
+window.MathJax = {
 
   //
   //  A comma-separated list of configuration files to load

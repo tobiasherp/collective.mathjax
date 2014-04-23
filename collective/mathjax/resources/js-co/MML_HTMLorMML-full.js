@@ -18,7 +18,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-Window.MathJax = {
+window.MathJax = {
   config: ["MMLorHTML.js"],
   extensions: ["mml2jax.js","MathEvents.js","MathZoom.js","MathMenu.js","toMathML.js"],
   jax: ["input/MathML","output/HTML-CSS","output/NativeMML"]
